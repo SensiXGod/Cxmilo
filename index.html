@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cxmilo - SensiXGod</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            overflow: hidden;
+            background: #000;
+            color: #00ff41;
+            font-family: 'VT323', monospace;
+            height: 100vh;
+            position: relative;
+        }
+
+        /* ===== LOADING SCREEN ===== */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, #0a0a0a 0%, #000 80%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 1s ease;
+        }
+
+        .hacker-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(rgba(0, 255, 65, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 65, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            animation: gridMove 8s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes gridMove {
+            0% { background-position: 0 0; }
+            100% { background-position: 40px 40px; }
+        }
+
+        .matrix-rain {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.15;
+            pointer-events: none;
+        }
+
+        .title {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 3.5rem;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 
+                0 0 20px #00ff41,
+                0 0 40px #00ff41,
+                0 0 80px #00ff41;
+            animation: glitch 1.5s infinite;
+        }
+
+        @keyframes glitch {
+            0% { text-shadow: 0 0 20px #00ff41; }
+            20% { text-shadow: 3px 0 20px #00ff41, -3px 0 20px #ff00ff; }
+            40% { text-shadow: -3px 0 20px #00ff41, 3px 0 20px #ffff00; }
+            100% { text-shadow: 0 0 20px #00ff41; }
+        }
+
+        .loading-text {
+            font-size: 2.2rem;
+            margin: 20px 0;
+            letter-spacing: 8px;
+        }
+
+        .progress-bar {
+            width: 420px;
+            height: 25px;
+            border: 3px solid #00ff41;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 30px #00ff41;
+        }
+
+        .progress {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #00ff41, #00cc33, #00ff41);
+            transition: width 0.1s linear;
+            box-shadow: 0 0 30px #00ff41;
+        }
+
+        .scanline {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(255,255,255,0.6);
+            box-shadow: 0 0 20px white;
+            animation: scan 1.5s linear infinite;
+        }
+
+        @keyframes scan {
+            0% { transform: translateY(-100px); }
+            100% { transform: translateY(800px); }
+        }
+
+        .terminal {
+            position: absolute;
+            bottom: 40px;
+            font-size: 1.3rem;
+            opacity: 0.8;
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        #main-content {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.9));
+            z-index: 1;
+        }
+
+        .background-blur {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://picsum.photos/id/1015/1920/1080') center/cover;
+            filter: blur(12px) brightness(0.4);
+            z-index: -1;
+        }
+
+        .logo-container {
+            position: relative;
+            display: flex;
+            gap: 15px;
+            font-size: 6.5rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 12px;
+            z-index: 2;
+        }
+
+        .letter {
+            opacity: 0;
+            transform: translateY(80px) rotateX(90deg);
+            text-shadow: 
+                0 0 30px #00ff41,
+                0 0 60px #00ff41,
+                0 0 120px #ff00ff;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            color: #00ff41;
+        }
+
+        .letter.show {
+            opacity: 1;
+            transform: translateY(0) rotateX(0);
+        }
+
+        .neon-glow {
+            animation: neonPulse 2s infinite alternate;
+        }
+
+        @keyframes neonPulse {
+            from { text-shadow: 0 0 30px #00ff41, 0 0 60px #00ff41; }
+            to { text-shadow: 0 0 50px #00ff41, 0 0 100px #00ff41, 0 0 150px #ff00ff; }
+        }
+
+        .subtitle {
+            margin-top: 60px;
+            font-size: 2.2rem;
+            color: #ff00ff;
+            text-shadow: 0 0 40px #ff00ff;
+            animation: flicker 0.8s infinite alternate;
+        }
+
+        @keyframes flicker {
+            0% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- LOADING SCREEN -->
+    <div id="loading-screen">
+        <div class="hacker-grid"></div>
+        <canvas id="matrix" class="matrix-rain"></canvas>
+        
+        <div class="title">CXMILO</div>
+        <div class="title" style="margin-top: -20px; font-size: 4rem; color: #ff00ff;">SENSIXGOD</div>
+        
+        <div class="loading-text">CARGANDO SISTEMA...</div>
+        
+        <div class="progress-bar">
+            <div class="progress" id="progress"></div>
+            <div class="scanline"></div>
+        </div>
+        
+        <div class="terminal" id="terminal-text">INICIANDO PROTOCOLO NEURAL...</div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main-content">
+        <div class="background-blur"></div>
+        
+        <div class="logo-container" id="logo-container">
+            <span class="letter">S</span>
+            <span class="letter">E</span>
+            <span class="letter">N</span>
+            <span class="letter">S</span>
+            <span class="letter">I</span>
+            <span class="letter">X</span>
+            <span class="letter" style="color:#ff00ff;">G</span>
+            <span class="letter" style="color:#ff00ff;">O</span>
+            <span class="letter" style="color:#ff00ff;">D</span>
+        </div>
+        
+        <div class="subtitle">EL DIOS DE LA SENSACIÓN</div>
+    </div>
+
+    <script>
+        // Matrix Rain Effect
+        function createMatrixRain() {
+            const canvas = document.getElementById('matrix');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.height = window.innerHeight;
+            canvas.width = window.innerWidth;
+            
+            const chars = "01アイウエオカキクケコセンシXGOD";
+            const fontSize = 14;
+            const columns = canvas.width / fontSize;
+            const drops = Array(Math.floor(columns)).fill(1);
+            
+            function draw() {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#00ff41';
+                ctx.font = `${fontSize}px monospace`;
+                
+                for (let i = 0; i < drops.length; i++) {
+                    const text = chars[Math.floor(Math.random() * chars.length)];
+                    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                    
+                    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                        drops[i] = 0;
+                    }
+                    drops[i]++;
+                }
+            }
+            
+            setInterval(draw, 35);
+        }
+
+        // Loading Animation
+        let progress = 0;
+        const progressBar = document.getElementById('progress');
+        const terminalText = document.getElementById('terminal-text');
+        
+        const messages = [
+            "INICIANDO PROTOCOLO NEURAL...",
+            "CONECTANDO A LA RED OSCURA...",
+            "CARGANDO SENSIXGOD CORE...",
+            "INYECCIÓN DE ENERGÍA NEÓN...",
+            "ACTIVANDO VISIÓN DIVINA...",
+            "SISTEMA LISTO"
+        ];
+        
+        let messageIndex = 0;
+
+        function startLoading() {
+            const interval = setInterval(() => {
+                progress += Math.random() * 8 + 3;
+                if (progress > 100) progress = 100;
+                
+                progressBar.style.width = `${progress}%`;
+                
+                if (progress % 18 < 5 && messageIndex < messages.length - 1) {
+                    terminalText.textContent = messages[messageIndex];
+                    messageIndex++;
+                }
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    setTimeout(finishLoading, 800);
+                }
+            }, 80);
+        }
+
+        function finishLoading() {
+            const loadingScreen = document.getElementById('loading-screen');
+            loadingScreen.style.opacity = '0';
+            
+            setTimeout(() => {
+                loadingScreen.style.display = 'none';
+                document.getElementById('main-content').style.display = 'flex';
+                
+                // Mostrar letras una por una
+                const letters = document.querySelectorAll('.letter');
+                let i = 0;
+                
+                const showLetters = setInterval(() => {
+                    if (i < letters.length) {
+                        letters[i].classList.add('show');
+                        i++;
+                    } else {
+                        clearInterval(showLetters);
+                        
+                        // Desaparecer automáticamente después de 4 segundos
+                        setTimeout(() => {
+                            letters.forEach(letter => {
+                                letter.style.transition = 'all 1.2s ease';
+                                letter.style.opacity = '0';
+                                letter.style.transform = 'translateY(-120px) scale(0.6)';
+                            });
+                        }, 4200);
+                    }
+                }, 180);
+            }, 1000);
+        }
+
+        // Iniciar todo
+        window.onload = function() {
+            createMatrixRain();
+            startLoading();
+            
+            // Efecto de clic en el fondo
+            document.addEventListener('click', (e) => {
+                if (document.getElementById('main-content').style.display === 'flex') {
+                    const flash = document.createElement('div');
+                    flash.style.position = 'fixed';
+                    flash.style.left = `${e.clientX}px`;
+                    flash.style.top = `${e.clientY}px`;
+                    flash.style.width = '20px';
+                    flash.style.height = '20px';
+                    flash.style.borderRadius = '50%';
+                    flash.style.background = 'rgba(0, 255, 65, 0.6)';
+                    flash.style.boxShadow = '0 0 60px #00ff41';
+                    flash.style.transform = 'scale(0.1)';
+                    flash.style.transition = 'all 0.6s ease';
+                    document.body.appendChild(flash);
+                    
+                    setTimeout(() => {
+                        flash.style.transform = 'scale(8)';
+                        flash.style.opacity = '0';
+                    }, 10);
+                    
+                    setTimeout(() => flash.remove(), 800);
+                }
+            });
+        };
+
+        // Responsive
+        window.addEventListener('resize', () => {
+            const canvas = document.getElementById('matrix');
+            if (canvas) {
+                canvas.height = window.innerHeight;
+                canvas.width = window.innerWidth;
+            }
+        });
+    </script>
+</body>
+</html>
